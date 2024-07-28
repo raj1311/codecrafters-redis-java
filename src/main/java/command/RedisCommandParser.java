@@ -12,14 +12,12 @@ public class RedisCommandParser {
         commandMap.put("ECHO", new EchoCommand());
         commandMap.put("SET", new SetCommand());
         commandMap.put("GET", new GetCommand());
-        // ... add more commands here
     }
 
     public static String parseAndExecute(String commandLine) {
         System.out.println(commandLine);
         String[] parts = commandLine.split(" ");
         String commandName = parts[0].toUpperCase();
-
         Command command = commandMap.get(commandName);
         if (command != null) {
             return command.execute(parts);
