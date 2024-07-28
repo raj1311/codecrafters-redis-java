@@ -1,3 +1,5 @@
+import command.RedisCommandParser;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,9 +37,8 @@ public class Main {
                 new InputStreamReader(clientSocket.getInputStream()))) {
             String line = null;
             while ((line = br.readLine()) != null) {
-                if (line.contains("PING")) {
-                    clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
-                }
+                String response = RedisCommandParser.parseAndExecute(line);
+                clientSocket.getOutputStream().write(response.getBytes());
             }
         } catch (Exception e) {
             e.printStackTrace();
