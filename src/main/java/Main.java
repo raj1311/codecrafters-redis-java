@@ -1,4 +1,7 @@
+import command.Command;
+import command.DataType;
 import command.RedisCommandParser;
+import model.CommandData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,10 +39,14 @@ public class Main {
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(clientSocket.getInputStream()))) {
             String line = null;
+            CommandData commandData = new CommandData();
             while ((line = br.readLine()) != null) {
-                String response = RedisCommandParser.parseAndExecute(line);
-                clientSocket.getOutputStream().write(response.getBytes());
+                System.out.println(" line :::::" + line);
+                RedisCommandParser.findDataTypeAndSetInfo(line,commandData);
             }
+            System.out.println("Command Data : " + commandData);
+            String response = RedisCommandParser.parseAndExecute(commandData);
+            clientSocket.getOutputStream().write(response.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
