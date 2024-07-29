@@ -22,6 +22,7 @@ public class RedisCommandParser {
         // 1. Extract Number of Arguments
         int numArgs = Integer.parseInt(parts[0].substring(1)); // Remove "*"
 
+        System.out.println(commandLine);
         String commandName ="";
         int counter = 1;
         // 2. Extract Command Name
