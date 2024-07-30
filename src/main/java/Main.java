@@ -1,4 +1,5 @@
 import command.RedisCommandParser;
+import model.CommandData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,24 +28,30 @@ public class Main {
                 executor.execute(() -> process(clientSocket));
             }
             // Wait for connection from client.
-        } catch (IOException e) {
+        } catch (Exception e) {
           System.out.println("IOException: " + e.getMessage());
         }
+
   }
 
     private static void process(Socket clientSocket) {
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(clientSocket.getInputStream()))) {
             String line = null;
+            CommandData commandData = new CommandData();
             while ((line = br.readLine()) != null) {
-                String response = RedisCommandParser.parseAndExecute(line);
-                clientSocket.getOutputStream().write(response.getBytes());
+                RedisCommandParser.findDataTypeAndSetInfo(line, commandData);
+                if (commandData.getTotalArgs() == commandData.getCommandArgs().size()) {
+                    String response = RedisCommandParser.parseAndExecute(commandData);
+                    clientSocket.getOutputStream().write(response.getBytes());
+                }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Got exception: " + e.getMessage());
         } finally {
             try {
                 if (clientSocket != null) {
+                    System.out.println("Closing connection");
                     clientSocket.close();
                 }
             } catch (IOException e) {
