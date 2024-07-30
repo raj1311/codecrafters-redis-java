@@ -18,7 +18,6 @@ public class RedisCommandParser {
     }
 
     public static String parseAndExecute(CommandData commandLine) {
-        System.out.println("Inside parseAndExecute");
         Command command = commandMap.get(commandLine.getCommand());
         if (command != null) {
             return command.execute(commandLine.getCommandArgs());

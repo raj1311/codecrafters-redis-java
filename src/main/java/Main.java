@@ -44,6 +44,7 @@ public class Main {
                 if (commandData.getTotalArgs() == commandData.getCommandArgs().size()) {
                     String response = RedisCommandParser.parseAndExecute(commandData);
                     clientSocket.getOutputStream().write(response.getBytes());
+                    commandData = new CommandData();
                 }
             }
         } catch (Exception e) {
