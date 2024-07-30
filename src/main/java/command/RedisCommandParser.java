@@ -1,5 +1,7 @@
 package command;
 
+import model.CommandData;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,31 +17,38 @@ public class RedisCommandParser {
         // ... add more commands here
     }
 
-    public static String parseAndExecute(String commandLine) {
-
-        String[] parts = commandLine.split("\r\n");
-
-        // 1. Extract Number of Arguments
-        int numArgs = Integer.parseInt(parts[0].substring(1)); // Remove "*"
-
-        String commandName ="";
-        int counter = 1;
-        // 2. Extract Command Name
-        for(int i = 1; i <= numArgs; i++) {
-            int strLen = Integer.parseInt(parts[counter].substring(1));
-            counter++;
-            String data = parts[counter].substring(0, strLen);
-            counter++;
-            if(i==1){
-                commandName = data;
-            }
-        }
-
-        Command command = commandMap.get(commandName);
+    public static String parseAndExecute(CommandData commandLine) {
+        System.out.println("Inside parseAndExecute");
+        Command command = commandMap.get(commandLine.getCommand());
         if (command != null) {
-            return command.execute(parts);
+            return command.execute(commandLine.getCommandArgs());
         } else {
-            return "-ERR unknown command '" + commandName + "'\r\n";
+            return "-ERR unknown command '" + commandLine.getCommand() + "'\r\n";
+        }
+    }
+
+    public static DataType findDataType(String line) {
+        if (line.startsWith("*")) {
+            return DataType.ASTERISK;
+        } else if (line.startsWith("$")) {
+            return DataType.STR_SIZE;
+        } else if (RedisCommandParser.commandMap.containsKey(line)) {
+            return DataType.COMMAND;
+        }
+        return DataType.STRING;
+    }
+
+    public static void findDataTypeAndSetInfo(String line, CommandData commandData) {
+        DataType dataType = findDataType(line);
+
+        if (dataType.equals(DataType.STRING)) {
+            commandData.getCommandArgs().add(line);
+
+        } else if (dataType.equals(DataType.ASTERISK)) {
+            commandData.setTotalArgs(Integer.parseInt(line.substring(1)));
+
+        } else if (dataType.equals(DataType.COMMAND)) {
+            commandData.setCommand(line);
         }
     }
 }
