@@ -1,5 +1,7 @@
 package command;
 
+import java.util.List;
+
 public interface Command {
-    String execute(String[] args);
+    String execute(List<String> args);
 }
