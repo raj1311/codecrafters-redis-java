@@ -41,9 +41,11 @@ public class Main {
             CommandData commandData = new CommandData();
             while ((line = br.readLine()) != null) {
                 RedisCommandParser.findDataTypeAndSetInfo(line, commandData);
+                System.out.println("Command: " + commandData);
                 if (commandData.getTotalArgs() == commandData.getCommandArgs().size()) {
                     String response = RedisCommandParser.parseAndExecute(commandData);
                     clientSocket.getOutputStream().write(response.getBytes());
+                    commandData = new CommandData();
                 }
             }
         } catch (Exception e) {
