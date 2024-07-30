@@ -49,9 +49,7 @@ public class RedisCommandParser {
 
         } else if (dataType.equals(DataType.COMMAND)) {
             commandData.setCommand(line);
-            if(!line.equals("PING")){
             commandData.getCommandArgs().add(line);
-            }
         }
     }
 }
